@@ -4,8 +4,7 @@ import os
 
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings.dev_settings')
-
-app = Celery('interview', broker=settings.CELERY_BROKER_URL)
+app = Celery('interview', broker=settings.CELERY_BROKER_URL, backend=settings.CELERY_RESULT_BACKEND)
 app.config_from_object('django.conf:settings', namespace='interview')
 
 # 自动加载任务

@@ -135,9 +135,9 @@ AUTH_USER_MODEL = 'user.User'
 
 # ------------celery配置项------------------
 CELERY_TIMEZONE = "Asia/Shanghai"
-CELERY_BROKER_URL = env.cache('BROKER_URL')
+CELERY_BROKER_URL = env.str('BROKER_URL')
 # BACKEND配置，这里使用redis
-CELERY_RESULT_BACKEND = env.cache('RESULT_BACKEND')
+CELERY_RESULT_BACKEND = env.str('RESULT_BACKEND')
 # 结果序列化方案
 CELERY_RESULT_SERIALIZER = 'json'
 
