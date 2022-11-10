@@ -2,3 +2,4 @@
 .idea
 envs
 **/migrations
+**/verify_image

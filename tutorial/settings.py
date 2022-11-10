@@ -6,6 +6,7 @@
 #     https://docs.scrapy.org/en/latest/topics/settings.html
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
+from pathlib import Path
 
 BOT_NAME = 'tutorial'
 
@@ -58,7 +59,7 @@ DOWNLOADER_MIDDLEWARES = {
 # 浏览器驱动名称
 SELENIUM_DRIVER_NAME = 'chrome'
 # 驱动程序的路径
-SELENIUM_DRIVER_EXECUTABLE_PATH = '/Users/wangodong/Desktop/learn/DJProject/interview/chromedriver'
+SELENIUM_DRIVER_EXECUTABLE_PATH = '/chromedriver'
 SELENIUM_DRIVER_ARGUMENTS = []
 
 # Enable or disable extensions
@@ -97,3 +98,6 @@ SELENIUM_DRIVER_ARGUMENTS = []
 # Set settings whose default value is deprecated to a future-proof value
 REQUEST_FINGERPRINTER_IMPLEMENTATION = '2.7'
 TWISTED_REACTOR = 'twisted.internet.asyncioreactor.AsyncioSelectorReactor'
+
+# 图片验证码(大图片保存位置)
+VERIFY_IMAGE_BIG_DIR = Path(__file__).parent / 'verify_image'

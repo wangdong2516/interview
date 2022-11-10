@@ -156,3 +156,8 @@ CELERY_DEFAULT_QUEUE = "default_wj"  # 默认的队列，如果一个消息不�
 CELERY_ACCEPT_CONTENT = ['application/json']
 
 CELERY_TASK_SERIALIZER = 'json'
+
+# -------------------百度OCR相关配置-------------------------
+APP_ID = '28335545'
+API_KEY = 'cZGotxafOdK8ThvYIuuOaGHs'
+OCR_SECRET_KEY = 'PvckkIsoxSeVUz1qSGmplKBELqthOBpv'

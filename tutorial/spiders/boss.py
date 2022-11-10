@@ -1,11 +1,17 @@
 import time
-
 import scrapy
 import re
+
+from PIL import Image
 from scrapy_selenium import SeleniumRequest
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import httpx
+
+from utils.baidu_ocr import OCRUtil
+from utils.file_util import FileUtil
+from utils.return_obj import ReturnObj
+from utils.status import StatusCodeEnum
 
 
 class BossSpider(scrapy.Spider):
@@ -54,26 +60,102 @@ class BossSpider(scrapy.Spider):
         return ''
 
     @staticmethod
-    def handle_verify_image_ocr(verify_image_src):
+    def download_with_retry(url: str, retry: int = 1) -> httpx.Response:
         """
-            处理图片验证码图片文字识别
+            向指定的url发送get请求
         Args:
-            verify_image_src: 图片验证码url
+            url: url
+            retry: 重试次数(不成功的情况下进行重试)
 
         Returns:
 
         """
-        # 下载图片
-        response = httpx.get(url=verify_image_src, timeout=5)
+        response = httpx.get(url=url, timeout=5)
         if not response.status_code == 200:
-            print('请求失败')
+            # 请求失败之后进行重试
+            retry_num = 0
+            while retry_num <= retry:
+                response = httpx.get(url=url, timeout=5)
+                if not response.status_code == 200:
+                    retry_num += 1
+                else:
+                    break
+
+        return response
+
+    @staticmethod
+    def change_image_light(image_path: str, changed_image_path: str = ''):
+        """
+            对图像进行二值化，改变图像的颜色，并且保存改变之后的图片
+            可以选择将源图片进行覆盖，也可以选择另存为新的图片
+        Args:
+            image_path: 图片路径
+            changed_image_path: 将图片二值化之后保存的路径，默认为空
+
+        Returns:
+
+        """
+
+        img = Image.open(image_path)
+        image = img.convert('L')
+        pixels = image.load()
+        for x in range(image.width):
+            for y in range(image.height):
+                if pixels[x, y] > 150:
+                    pixels[x, y] = 255
+                else:
+                    pixels[x, y] = 0
+        image.save(changed_image_path)
+
+    def image_ocr(self, verify_image_src: str, directory: str):
+        """
+            下载图像，调用百度OCR识别(高精度带位置)识别并且保存图片到指定的目录中
+        Args:
+            verify_image_src: 图片路径
+            directory: 图片存储目录
+
+        Returns:
+
+        """
+        response = self.download_with_retry(verify_image_src)
+        if not response.status_code == 200:
+            return ReturnObj(success=False, enum=StatusCodeEnum.REQUEST_ERROR)
+
+        # 拿到图片的数据
         image_bytes = response.content
+        # 图片文件名后缀
         image_suffix = re.sub(r'\?.*', '', verify_image_src.split('.')[-1])
-        print(image_suffix)
+        # 图片文件名前缀
         image_prefix = re.search(r'=(.*)', verify_image_src).groups()[0] if re.search(r'=(.*)', verify_image_src).groups()[0] else f'unknown{time.ctime()}'
         # 保存图片
-        with open(f'./{image_prefix}.{image_suffix}', 'wb') as f:
-            f.write(image_bytes)
+        file_util = FileUtil()
+        image_path = f'{directory}/{image_prefix}.{image_suffix}'
+        changed_image_path = f'{directory}/{image_prefix}_2.{image_suffix}'
+        ret_value = file_util.save_file(image_path, image_bytes)
+        if not ret_value.success:
+            return ret_value
+        # 将图片进行二值化处理
+        self.change_image_light(image_path=image_path, changed_image_path=changed_image_path)
+        file_path = changed_image_path if changed_image_path != image_path else image_path
+        image_bytes_changed = file_util.read_file(file_path=image_path)
+
+        ocr_util = OCRUtil()
+        res = ocr_util.accurate_image_word(content=image_bytes_changed)
+        return res
+
+    def handle_verify_image_ocr(self, verify_image_src: str):
+        """
+            处理图片验证码图片文字识别
+        Args:
+            verify_image_src: 图片验证码(大图)url
+
+        Returns:
+
+        """
+
+        # 大图片文字的识别结果
+        image_ocr_res = self.image_ocr(verify_image_src, self.settings['VERIFY_IMAGE_BIG_DIR'])
+        print(image_ocr_res)
 
     def verify_code_login(self, login_url: str):
         # 创建一个浏览器驱动
@@ -97,11 +179,13 @@ class BossSpider(scrapy.Spider):
         except Exception as e:
             print('不是滑块验证方式')
         try:
+            # 大图的图片地址
             background_image = browser.find_element(by=By.XPATH, value='//div[@class="geetest_item_wrap"]')
             content = background_image.get_attribute('style')
-            verify_image_src = self.extract_verify_image_src(content)
-            self.handle_verify_image_ocr(verify_image_src)
+            verify_image_src_big = self.extract_verify_image_src(content)
+            self.handle_verify_image_ocr(verify_image_src_big)
         except Exception as e:
+            print(e)
             print('不是图形验证码验证方式')
 
         # browser.find_element(by=By.XPATH, value='//button[@class="btn btn-sms"]').click()
