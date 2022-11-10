@@ -40,6 +40,9 @@ class OCRUtil(object):
         while res_image.get('words_result_num', 0) <= 1:
             options = {'recognize_granularity': "small"}
             res_image = self.ocr_client.accurate(content, options=options)
+            if not res_image:
+                print('没有识别到图片中的文字.....')
+                break
         return res_image
 
 

@@ -1,4 +1,6 @@
 import time
+from typing import List, Dict
+
 import scrapy
 import re
 
@@ -7,7 +9,7 @@ from scrapy_selenium import SeleniumRequest
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import httpx
-
+from selenium.webdriver import ActionChains
 from utils.baidu_ocr import OCRUtil
 from utils.file_util import FileUtil
 from utils.return_obj import ReturnObj
@@ -137,17 +139,37 @@ class BossSpider(scrapy.Spider):
         # 将图片进行二值化处理
         self.change_image_light(image_path=image_path, changed_image_path=changed_image_path)
         file_path = changed_image_path if changed_image_path != image_path else image_path
-        image_bytes_changed = file_util.read_file(file_path=image_path)
+        image_bytes_changed = file_util.read_file(file_path=file_path)
 
         ocr_util = OCRUtil()
         res = ocr_util.accurate_image_word(content=image_bytes_changed)
         return res
 
-    def handle_verify_image_ocr(self, verify_image_src: str):
+    @staticmethod
+    def click_words(words_position_info: List[Dict], browser: webdriver.Chrome):
+        """
+            依次点击图片中的文字
+        Args:
+            words_position_info: 文字位置信息
+            browser: 浏览器对象
+
+        Returns:
+
+        """
+        image = browser.find_element(by=By.XPATH, value='//div[@class="geetest_item_wrap"]')
+        for info in words_position_info:
+            ActionChains(browser).move_to_element_with_offset(
+                to_element=image, xoffset=info['location']['left'] + 20,
+                yoffset=info['location']['top'] + 20
+            ).click().perform()
+            print('ssssssss')
+
+    def handle_verify_image_ocr(self, verify_image_src: str, browser: webdriver.Chrome):
         """
             处理图片验证码图片文字识别
         Args:
             verify_image_src: 图片验证码(大图)url
+            browser: 浏览器对象
 
         Returns:
 
@@ -155,7 +177,10 @@ class BossSpider(scrapy.Spider):
 
         # 大图片文字的识别结果
         image_ocr_res = self.image_ocr(verify_image_src, self.settings['VERIFY_IMAGE_BIG_DIR'])
-        print(image_ocr_res)
+        print(f'获取到百度OCR的识别结果:{image_ocr_res}')
+        if image_ocr_res.get('words_result'):
+            print(f'开始点击图片中的文字')
+            self.click_words(image_ocr_res['words_result'], browser=browser)
 
     def verify_code_login(self, login_url: str):
         # 创建一个浏览器驱动
@@ -169,24 +194,36 @@ class BossSpider(scrapy.Spider):
         # 定位点击按钮进行验证位置
         browser.find_element(by=By.XPATH, value='//div[contains(@id, "verrify")]').click()
         # 隐式等待，最多等待20秒
-        browser.implicitly_wait(10)
+        browser.implicitly_wait(5)
 
         # 验证图片的地址
         verify_image_src = ''
         try:
             slipper_background_image = browser.find_element(by=By.XPATH, value='//img[@class="yidun_bg-img"]')
             verify_image_src = slipper_background_image.get_attribute('src')
+            print(verify_image_src)
         except Exception as e:
             print('不是滑块验证方式')
+
         try:
-            # 大图的图片地址
-            background_image = browser.find_element(by=By.XPATH, value='//div[@class="geetest_item_wrap"]')
-            content = background_image.get_attribute('style')
-            verify_image_src_big = self.extract_verify_image_src(content)
-            self.handle_verify_image_ocr(verify_image_src_big)
+            time.sleep(10)
+            # browser.find_element(by=By.XPATH, value='//div[@class="verify-init-btn"]').click()
+            # print('点击成功')
+            browser.find_element(by=By.XPATH, value='//div[@class="yidun_intelli-tips"]').click()
+            print('点击成功2')
         except Exception as e:
             print(e)
-            print('不是图形验证码验证方式')
+            print('不是点击验证方式')
+
+        # try:
+        #     # 大图的图片地址
+        #     background_image = browser.find_element(by=By.XPATH, value='//div[@class="geetest_item_wrap"]')
+        #     content = background_image.get_attribute('style')
+        #     verify_image_src_big = self.extract_verify_image_src(content)
+        #     self.handle_verify_image_ocr(verify_image_src_big, browser=browser)
+        # except Exception as e:
+        #     print(e)
+        #     print('不是图形验证码验证方式')
 
         # browser.find_element(by=By.XPATH, value='//button[@class="btn btn-sms"]').click()
 
