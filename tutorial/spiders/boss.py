@@ -193,6 +193,7 @@ class BossSpider(scrapy.Spider):
         browser.find_element(by=By.XPATH, value='//input[@name="phone"]').send_keys(18734872516)
         # 定位点击按钮进行验证位置
         browser.find_element(by=By.XPATH, value='//div[contains(@id, "verrify")]').click()
+        browser.find_element(by=By.XPATH, value='//div[contains(@id, "verrify")]').click()
         # 隐式等待，最多等待20秒
         browser.implicitly_wait(5)
 
