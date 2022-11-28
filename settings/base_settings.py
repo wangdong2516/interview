@@ -40,10 +40,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'user'
+    'user',
+    'rest_framework'
 ]
 
 MIDDLEWARE = [
+    # 日志处理中间件(记录请求日志信息)
+    'middleware.log_middleware.LogMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -161,3 +164,12 @@ CELERY_TASK_SERIALIZER = 'json'
 APP_ID = '28335545'
 API_KEY = 'cZGotxafOdK8ThvYIuuOaGHs'
 OCR_SECRET_KEY = 'PvckkIsoxSeVUz1qSGmplKBELqthOBpv'
+
+
+# ----------------Django Rest Frame work相关的配置--------------
+REST_FRAMEWORK = {
+    # 默认的分页器
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    # 每页的个数
+    'PAGE_SIZE': 10
+}

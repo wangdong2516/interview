@@ -13,4 +13,5 @@ from django.core.wsgi import get_wsgi_application
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings.dev_settings')
 
+# 获取一个wsgi应用
 application = get_wsgi_application()
