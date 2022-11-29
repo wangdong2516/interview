@@ -41,10 +41,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'user',
-    'rest_framework'
+    'rest_framework',
+    # django-cid应用(日志请求，记录唯一id)
+    'cid.apps.CidAppConfig',
 ]
 
 MIDDLEWARE = [
+    # 日志唯一ID生成(django-cid)，中间件负责从 HTTP 请求标头获取相关属性
+    'cid.middleware.CidMiddleware',
     # 日志处理中间件(记录请求日志信息)
     'middleware.log_middleware.LogMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -172,4 +176,58 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     # 每页的个数
     'PAGE_SIZE': 10
+}
+
+# ---------------Django-Cid配置----------------------------------
+# https://django-correlation-id.readthedocs.io/en/latest/installation.html
+CID_GENERATE = True  # 默认情况下使用uuid4生成
+CID_RESPONSE_HEADER = 'Request-ID'
+CID_HEADER = CID_RESPONSE_HEADER
+
+
+# --------------日志相关配置-------------------------------
+# 日志文件的存放路径(不存在就创建)
+LOG_DIR = BASE_DIR / 'logs'
+if not LOG_DIR.exists():
+    LOG_DIR.mkdir()
+
+LOGGING = {
+    'version': 1,
+    'formatters': {
+        'verbose': {
+            'format': '[cid: %(cid)s] %(levelname)s %(asctime)s %(message)s'
+        },
+        'simple': {
+            'format': '[cid: %(cid)s] %(levelname)s %(message)s'
+        },
+    },
+    'handlers': {
+        'api_request_handler': {
+            'level': 'INFO',
+            'class': 'utils.log_file_handler.CommonTimedRotatingFileHandler',
+            'formatter': 'verbose',
+            'filters': ['correlation'],
+            'filename': 'logs/api_request.log',
+            # 每分钟切割一次日志
+            'when': 'midnight',
+            # 时间间隔
+            'interval': 1,
+            # 保留5份日志
+            'backupCount': 30,
+            'encoding': 'utf-8'
+        },
+    },
+    'filters': {
+        'correlation': {
+            '()': 'cid.log.CidContextFilter'
+        },
+    },
+    'loggers': {
+        'api_request': {
+            'handlers': ['api_request_handler'],
+            'filters': ['correlation'],
+            'propagate': True,
+            'level': 'INFO'
+        },
+    },
 }
