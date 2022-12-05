@@ -74,7 +74,8 @@ class LogMiddleware(MiddlewareMixin):
 
         self.log.info(
             f'path:{_request.path}, method:{_request.method}, body:{_request.data},'
-            f'query_params:{dict(_request.query_params)}, status_code:{response.status_code},response:{response.data}'
+            f'query_params:{dict(_request.query_params)}, status_code:{response.status_code},'
+            f'response:{response.data if hasattr(response, "data") else {}}'
         )
 
         if hasattr(self, 'start_time'):
