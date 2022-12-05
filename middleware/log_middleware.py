@@ -73,7 +73,7 @@ class LogMiddleware(MiddlewareMixin):
         )
 
         self.log.info(
-            f'cid:{request.correlation_id}, path:{_request.path}, method:{_request.method}, body:{_request.data},'
+            f'path:{_request.path}, method:{_request.method}, body:{_request.data},'
             f'query_params:{dict(_request.query_params)}, status_code:{response.status_code},response:{response.data}'
         )
 
