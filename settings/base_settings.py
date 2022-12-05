@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'rest_framework',
     # django-cid应用(日志请求，记录唯一id)
     'cid.apps.CidAppConfig',
-    'area'
+    'area',
+    'utils',
 ]
 
 MIDDLEWARE = [
