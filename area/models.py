@@ -9,7 +9,7 @@ class ProvinceModel(models.Model):
     """
 
     id = models.BigAutoField(primary_key=True)
-    province_name = models.CharField('省份名称', max_length=64, null=False, blank=False, unique=True)
+    province_name = models.CharField('省份名称', max_length=64, null=False, blank=False, unique=True, db_index=True)
 
     class Meta:
         db_table = 'province'
@@ -24,7 +24,7 @@ class CityModel(models.Model):
     """
 
     id = models.BigAutoField(primary_key=True)
-    city_name = models.CharField('市名称', max_length=64, null=False, blank=False)
+    city_name = models.CharField('市名称', max_length=64, null=False, blank=False, db_index=True)
     province_id = models.ForeignKey(
         ProvinceModel, on_delete=models.DO_NOTHING, null=False, blank=False, db_index=True,
         db_column='province_id'
@@ -43,7 +43,7 @@ class CountyModel(models.Model):
     """
 
     id = models.BigAutoField(primary_key=True)
-    county_name = models.CharField('区(县)名称', max_length=64, null=False, blank=False)
+    county_name = models.CharField('区(县)名称', max_length=64, null=False, blank=False, db_index=True)
     city_id = models.ForeignKey(
         CityModel, on_delete=models.DO_NOTHING, null=False, blank=False, db_index=True,
         db_column='city_id'
@@ -62,7 +62,7 @@ class TownModel(models.Model):
     """
 
     id = models.BigAutoField(primary_key=True)
-    town_name = models.CharField('乡(镇)名称', max_length=64, null=False, blank=False)
+    town_name = models.CharField('乡(镇)名称', max_length=64, null=False, blank=False, db_index=True)
     county_id = models.ForeignKey(
         CountyModel, on_delete=models.DO_NOTHING, null=False, blank=False, db_index=True,
         db_column='county_id'
@@ -74,22 +74,4 @@ class TownModel(models.Model):
     def __str__(self):
         return self.town_name
 
-
-class VillageModel(models.Model):
-    """
-        村模型类
-    """
-
-    id = models.BigAutoField(primary_key=True)
-    village_name = models.CharField('村名称', max_length=128, null=False, blank=False)
-    town_id = models.ForeignKey(
-        TownModel, on_delete=models.DO_NOTHING, db_index=True, null=False, blank=False,
-        db_column='town_id'
-    )
-
-    class Meta:
-        db_table = 'village'
-
-    def __str__(self):
-        return self.village_name
 
