@@ -9,7 +9,9 @@ class ProvinceModel(models.Model):
     """
 
     id = models.BigAutoField(primary_key=True)
-    province_name = models.CharField('省份名称', max_length=64, null=False, blank=False, unique=True, db_index=True)
+    province_name = models.CharField(
+        '省份名称', max_length=64, null=False, blank=False, unique=True, db_index=True
+    )
 
     class Meta:
         db_table = 'province'
@@ -27,7 +29,7 @@ class CityModel(models.Model):
     city_name = models.CharField('市名称', max_length=64, null=False, blank=False, db_index=True)
     province_id = models.ForeignKey(
         ProvinceModel, on_delete=models.DO_NOTHING, null=False, blank=False, db_index=True,
-        db_column='province_id'
+        db_column='province_id', related_name='cities'
     )
 
     class Meta:
@@ -46,7 +48,7 @@ class CountyModel(models.Model):
     county_name = models.CharField('区(县)名称', max_length=64, null=False, blank=False, db_index=True)
     city_id = models.ForeignKey(
         CityModel, on_delete=models.DO_NOTHING, null=False, blank=False, db_index=True,
-        db_column='city_id'
+        db_column='city_id', related_name='counties'
     )
 
     class Meta:
@@ -65,7 +67,7 @@ class TownModel(models.Model):
     town_name = models.CharField('乡(镇)名称', max_length=64, null=False, blank=False, db_index=True)
     county_id = models.ForeignKey(
         CountyModel, on_delete=models.DO_NOTHING, null=False, blank=False, db_index=True,
-        db_column='county_id'
+        db_column='county_id', related_name='towns'
     )
 
     class Meta:
