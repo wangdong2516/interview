@@ -1,5 +1,7 @@
 from rest_framework.generics import ListAPIView
+from django_filters import rest_framework as filters
 
+from area.filters import ProvinceFilter
 from area.models import ProvinceModel
 from area.serializer import ProvinceSerializer
 
@@ -9,10 +11,5 @@ from area.serializer import ProvinceSerializer
 class ProvinceListView(ListAPIView):
 
     serializer_class = ProvinceSerializer
-
-    def get_queryset(self):
-        name = self.request.query_params.get('name')
-        queryset = ProvinceModel.objects.all()
-        if name:
-            queryset = ProvinceModel.objects.filter(province_name__contains=name)
-        return queryset.order_by('-id').all()
+    queryset = ProvinceModel.objects.order_by('-id').all()
+    filterset_class = ProvinceFilter

@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'cid.apps.CidAppConfig',
     'area',
     'utils',
+    'django_filters'
 ]
 
 MIDDLEWARE = [
@@ -177,7 +178,11 @@ REST_FRAMEWORK = {
     # 默认的分页器
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     # 每页的个数
-    'PAGE_SIZE': 10
+    'PAGE_SIZE': 10,
+    # 默认的过滤器后端
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
+    )
 }
 
 # ---------------Django-Cid配置----------------------------------
