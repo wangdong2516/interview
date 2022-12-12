@@ -29,6 +29,7 @@ django-cid = "^2.3"
 pandas = "^1.5.2"
 pymysql = "^1.0.2"
 django-filter = "^22.1"
+sentry-sdk = "^1.11.1"
 
 [tool.poetry.dev-dependencies]
 
