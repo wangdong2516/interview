@@ -4,3 +4,4 @@ envs
 **/migrations
 **/verify_image
 logs
+**/.DS_Store
