@@ -34,6 +34,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -47,7 +48,9 @@ INSTALLED_APPS = [
     'area',
     'utils',
     # 查询过滤
-    'django_filters'
+    'django_filters',
+    # django-channels的网络聊天室
+    'chat'
 ]
 
 MIDDLEWARE = [
@@ -69,7 +72,7 @@ ROOT_URLCONF = 'interview.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -83,7 +86,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'interview.wsgi.application'
-
+ASGI_APPLICATION = 'interview.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
@@ -257,3 +260,15 @@ dsn="http://895fa50f68214d3ab2700de2ef915c69@127.0.0.1:9000/3",
     # django.contrib.auth) you may enable sending PII data.
     send_default_pii=True
 )
+
+
+# -------------django-channels通道层配置-----------------
+# 使用redis作为通道的存储介质
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}

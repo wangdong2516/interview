@@ -1,4 +1,4 @@
-"""interview URL Configuration
+""" URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/4.1/topics/http/urls/
@@ -14,11 +14,13 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, re_path
+from django.urls import include
+
+from chat.consumers import ChatConsumer
+from chat.views import ChatIndexView, ChatRoomView
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('api/user/', include('user.urls')),
-    path('api/area/', include('area.urls')),
-    path('api/chat/', include('chat.urls')),
+    path('index/', ChatIndexView.as_view()),
+    path('chat_room/<str:room_name>/', ChatRoomView.as_view())
 ]
