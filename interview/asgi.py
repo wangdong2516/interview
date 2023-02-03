@@ -20,10 +20,12 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings.dev_settings')
 
 # application = get_asgi_application()
 
-# 集成django-channels功能
+# 集成django-channels功能(同时支持https协议和websocket协议)
 application = ProtocolTypeRouter(
     {
+        # https方式调用的asgi方法
         'http': get_asgi_application(),
+        # websocket协议调用的asgi方法
         "websocket": AllowedHostsOriginValidator(
                 AuthMiddlewareStack(URLRouter(chat.routing.websocket_urlpatterns))
             ),
