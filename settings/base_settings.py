@@ -50,7 +50,9 @@ INSTALLED_APPS = [
     # 查询过滤
     'django_filters',
     # django-channels的网络聊天室
-    'chat'
+    'chat',
+    # django-elasticsearch-dsl
+    'django_elasticsearch_dsl'
 ]
 
 MIDDLEWARE = [
@@ -272,5 +274,12 @@ CHANNEL_LAYERS = {
         "CONFIG": {
             "hosts": [("127.0.0.1", 6379)],
         },
+    },
+}
+
+# Elasticsearch配置
+ELASTICSEARCH_DSL={
+    'default': {
+        'hosts': 'localhost:9200'
     },
 }
