@@ -1,6 +1,5 @@
 import json
 
-from asgiref.sync import async_to_sync
 from channels.generic.websocket import AsyncWebsocketConsumer
 
 
@@ -14,11 +13,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
         """
         # 从路由中解析聊天室的名称
         self.room_name = self.scope['url_route']['kwargs']['room_name']
-        print(self.room_name)
         # 聊天室组的名称-基于聊天室的名称
         self.room_group_name = f'chat_{self.room_name}'
         # 自动生成的频道名称
-        print(self.channel_name)
         # 将异步调用修改为同步调用，创建组和对应的频道
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         # 接收请求
@@ -46,8 +43,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         Returns:
 
         """
-        print(text_data)
-        print(type(text_data))
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
         # 向组中发送消息
@@ -64,6 +59,5 @@ class ChatConsumer(AsyncWebsocketConsumer):
         Returns:
 
         """
-        print(event)
         message = event['message']
         await self.send(text_data=json.dumps({'message': message}))
