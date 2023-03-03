@@ -35,6 +35,9 @@ pymongo = "^4.3.3"
 aioredis = "^2.0.1"
 django-elasticsearch-dsl = "^7.3"
 openai = "^0.26.5"
+uwsgi = "^2.0.21"
+gevent = "^22.10.2"
+flower = "^1.2.0"
 
 [tool.poetry.dev-dependencies]
 
