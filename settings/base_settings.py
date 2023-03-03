@@ -9,6 +9,8 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
+import os
+
 import environ
 from pathlib import Path
 
@@ -52,7 +54,9 @@ INSTALLED_APPS = [
     # django-channels的网络聊天室
     'chat',
     # django-elasticsearch-dsl
-    'django_elasticsearch_dsl'
+    'django_elasticsearch_dsl',
+    # 数据分析模块
+    'analysis'
 ]
 
 MIDDLEWARE = [
@@ -152,27 +156,28 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'user.User'
 
 # ------------celery配置项------------------
+# 设置celery的时区
 CELERY_TIMEZONE = "Asia/Shanghai"
+# 设置celery broker(存储任务的)的地址
 CELERY_BROKER_URL = env.str('BROKER_URL')
-# BACKEND配置，这里使用redis
+# BACKEND配置(存储结果),使用redis
 CELERY_RESULT_BACKEND = env.str('RESULT_BACKEND')
 # 结果序列化方案
 CELERY_RESULT_SERIALIZER = 'json'
-
 # CELERYBEAT_SCHEDULER = 'celery.schedulers.DatabaseScheduler'  # 使用了django-celery默认的数据库调度模型,任务执行周期都被存在你指定的orm数据库中
-
-CELERY_TASK_RESULT_EXPIRES = 1200  # celery任务执行结果的超时时间，我的任务都不需要返回结果,只需要正确执行就行
-
-CELERYD_CONCURRENCY = 10  # celery worker的并发数 也是命令行-c指定的数目,事实上实践发现并不是worker也多越好,保证任务不堆积,加上一定新增任务的预留就可以
-
-CELERYD_PREFETCH_MULTIPLIER = 4  # celery worker 每次去rabbitmq取任务的数量，我这里预取了4个慢慢执行,因为任务有长有短没有预取太多
-
-CELERYD_MAX_TASKS_PER_CHILD = 200  # 每个worker执行了多少任务就会死掉
-
-CELERY_DEFAULT_QUEUE = "default_wj"  # 默认的队列，如果一个消息不符合其他的队列就会放在默认队列里面
-
+# 存储任务结果的过期时间，超过这个时间自动过期，设置为None，表示永久有效
+CELERY_TASK_RESULT_EXPIRES = 1200
+# 每个worker可以同时处理的任务数量，默认是2，建议设置为当前电脑的核心数
+CELERYD_CONCURRENCY = os.cpu_count()
+# 用于控制worker进程每次从broker中预取任务的数量，默认是4
+CELERYD_PREFETCH_MULTIPLIER = 4
+# 它用于控制每个worker进程最多可以处理的任务数量。一旦worker进程处理任务的数量达到这个值，就会重启
+CELERYD_MAX_TASKS_PER_CHILD = 200
+# 如果消息没有指定路由或者没有指定队列，都将放到默认队列中
+CELERY_DEFAULT_QUEUE = "default_wj"
+# 允许接受的内容类型，如果不符合该类型，则任务会被丢弃，支持的类型有json，YAML， pickle等
 CELERY_ACCEPT_CONTENT = ['application/json']
-
+# 任务信息的序列化方式
 CELERY_TASK_SERIALIZER = 'json'
 
 # -------------------百度OCR相关配置-------------------------
