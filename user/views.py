@@ -5,5 +5,5 @@ from rest_framework.response import Response
 
 class UserLoginView(APIView):
 
-    def get(self, request):
-        return Response({"message": 'hello'})
+    def post(self, request):
+        return Response({'message': 'ok'})

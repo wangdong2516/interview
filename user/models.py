@@ -1,5 +1,10 @@
+import datetime
+
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.utils import timezone
+
+
 # Create your models here.
 
 
@@ -10,6 +15,7 @@ class Address(models.Model):
 
     id = models.BigAutoField(primary_key=True)
     address = models.CharField(max_length=60)
+    create_time = models.DateTimeField(default=timezone.now, null=False)
 
     class Meta:
         db_table = 'address'

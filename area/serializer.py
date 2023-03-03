@@ -22,3 +22,8 @@ class ProvinceSerializer(serializers.Serializer):
 
     province_name = serializers.CharField()
     cities = CitySerializer(many=True)
+
+
+class ESCitySerializer(serializers.Serializer):
+
+    city_name = serializers.CharField()
