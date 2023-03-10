@@ -227,7 +227,7 @@ LOGGING = {
             'class': 'utils.log_file_handler.CommonTimedRotatingFileHandler',
             'formatter': 'verbose',
             'filters': ['correlation'],
-            'filename': 'logs/api_request.log',
+            'filename': f'{BASE_DIR}/logs/api_request.log',
             # 每分钟切割一次日志
             'when': 'midnight',
             # 时间间隔
