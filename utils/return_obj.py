@@ -12,5 +12,3 @@ class ReturnObj(object):
         self.message = StatusCodeEnum.get_message(enum)
         self.success = success
         self.data = data
-
-

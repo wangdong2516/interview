@@ -128,7 +128,8 @@ class BossSpider(scrapy.Spider):
         # 图片文件名后缀
         image_suffix = re.sub(r'\?.*', '', verify_image_src.split('.')[-1])
         # 图片文件名前缀
-        image_prefix = re.search(r'=(.*)', verify_image_src).groups()[0] if re.search(r'=(.*)', verify_image_src).groups()[0] else f'unknown{time.ctime()}'
+        image_prefix = re.search(r'=(.*)', verify_image_src).groups()[0] if re.search(
+            r'=(.*)', verify_image_src).groups()[0] else f'unknown{time.ctime()}'
         # 保存图片
         file_util = FileUtil()
         image_path = f'{directory}/{image_prefix}.{image_suffix}'
@@ -179,7 +180,7 @@ class BossSpider(scrapy.Spider):
         image_ocr_res = self.image_ocr(verify_image_src, self.settings['VERIFY_IMAGE_BIG_DIR'])
         print(f'获取到百度OCR的识别结果:{image_ocr_res}')
         if image_ocr_res.get('words_result'):
-            print(f'开始点击图片中的文字')
+            print('开始点击图片中的文字')
             self.click_words(image_ocr_res['words_result'], browser=browser)
 
     def verify_code_login(self, login_url: str):
@@ -203,7 +204,7 @@ class BossSpider(scrapy.Spider):
             slipper_background_image = browser.find_element(by=By.XPATH, value='//img[@class="yidun_bg-img"]')
             verify_image_src = slipper_background_image.get_attribute('src')
             print(verify_image_src)
-        except Exception as e:
+        except Exception as e:  # noqa: F841
             print('不是滑块验证方式')
 
         try:
@@ -236,5 +237,3 @@ class BossSpider(scrapy.Spider):
         login_url = response.xpath('//a[@ka="header-login"]/@href').extract()[0]
         # 使用验证码方式登录boss
         self.verify_code_login(login_url)
-
-

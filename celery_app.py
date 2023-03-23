@@ -32,5 +32,3 @@ def test(name):
 @app.task
 def debug():
     print('DEBUG')
-
-

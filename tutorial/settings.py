@@ -52,8 +52,8 @@ COOKIES_ENABLED = False
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 # 下载器中间件
 DOWNLOADER_MIDDLEWARES = {
-   'tutorial.middlewares.TutorialDownloaderMiddleware': 543,
-   'scrapy_selenium.SeleniumMiddleware': 800
+    'tutorial.middlewares.TutorialDownloaderMiddleware': 543,
+    'scrapy_selenium.SeleniumMiddleware': 800
 }
 
 # 浏览器驱动名称

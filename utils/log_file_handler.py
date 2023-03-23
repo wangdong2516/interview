@@ -92,4 +92,3 @@ class CommonTimedRotatingFileHandler(TimedRotatingFileHandler):
                     addend = 3600
                 newRolloverAt += addend
         self.rolloverAt = newRolloverAt
-

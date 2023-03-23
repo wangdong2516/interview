@@ -83,4 +83,3 @@ class LogMiddleware(MiddlewareMixin):
             duration = end_time - self.start_time
             response.__setitem__("X-Page-Duration-ms", int(duration * 1000))
         return response
-

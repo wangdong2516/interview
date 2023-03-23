@@ -24,7 +24,7 @@ def wrapper2(func2):
 @wrapper2
 @wrapper1
 def test():
-    return 1+1
+    return 1 + 1
 
 
 print(test())

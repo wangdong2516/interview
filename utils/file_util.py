@@ -30,7 +30,7 @@ class FileUtil:
             # 创建目录，当目录已经存在的时候不报错
             folder_path.mkdir(exist_ok=True)
             return True
-        except (FileNotFoundError, OSError) as error:
+        except (FileNotFoundError, OSError) as error:  # noqa:F841
             return False
 
     def save_file(self, file_path: Union[Path, str], content: Union[bytes, str]) -> ReturnObj:
@@ -57,7 +57,7 @@ class FileUtil:
             with open(str(file_path), 'wb') as f:
                 f.write(content)
             return ReturnObj(success=True, enum=StatusCodeEnum.OK)
-        except Exception as e:
+        except Exception as e:  # noqa:F841
             return ReturnObj(success=False, enum=StatusCodeEnum.WRITE_FILE_FAILED)
 
     @staticmethod

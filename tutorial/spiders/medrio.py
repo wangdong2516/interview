@@ -23,8 +23,8 @@ class MedrioSpider(scrapy.Spider):
         browser.find_element(by=By.XPATH, value='//input[@name="username_"]').send_keys('gsbtest')
         browser.find_element(by=By.XPATH, value='//input[@name="password"]').send_keys('dip@123456')
         browser.find_element(by=By.XPATH, value='//input[@id="btnLogin"]').click()
-        browser.get(url='https://login.medrio.com/Account/Profile?returnURL=https%3a%2f%2fapac01.medrio.com%2fMedrioWeb%2fapp%2fmanage%2fdefault.aspx%3finit%3dtrue')
-        browser.get(url='https://login.medrio.com/Account/AddPhoneNumber?ReturnUrl=https%3A%2F%2Fapac01.medrio.com%2FMedrioWeb%2Fapp%2Fmanage%2Fdefault.aspx%3Finit%3Dtrue')
+        browser.get(url='https://login.medrio.com/Account/Profile?returnURL=https%3a%2f%2fapac01.medrio.com%2fMedrioWeb%2fapp%2fmanage%2fdefault.aspx%3finit%3dtrue')  # noqa:E501
+        browser.get(url='https://login.medrio.com/Account/AddPhoneNumber?ReturnUrl=https%3A%2F%2Fapac01.medrio.com%2FMedrioWeb%2Fapp%2Fmanage%2Fdefault.aspx%3Finit%3Dtrue')  # noqa:E501
         # 国家名称
         browser.find_element(by=By.XPATH, value='//div[@class="flag-container"]').click()
         country_names_ele = browser.find_elements(by=By.CLASS_NAME, value='country')
@@ -39,7 +39,7 @@ class MedrioSpider(scrapy.Spider):
             dial_codes.append(dial_code.text)
         for countrycode in country_code_ele:
             country_codes.append(countrycode.get_attribute('data-country-code'))
-        for country_name,  dial_code, country_code in list(zip(country_names, dial_codes, country_codes)):
+        for country_name, dial_code, country_code in list(zip(country_names, dial_codes, country_codes)):
             with open('./country_dial_code.sql', 'a') as f:
                 f.writelines(
                     f"INSERT INTO `country_dial_code` (`country_name`, `dial_code`, `country_code`) VALUE ("

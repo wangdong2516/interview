@@ -77,7 +77,7 @@ class AsyncRedisUtil(object):
             return False
         return result
 
-    async def get_range(self, key:str, start: int, end: int):
+    async def get_range(self, key: str, start: int, end: int):
         """获取指定范围内的字符串的子串(字符串指令)"""
         return await self.client.getrange(key, start, end)
 

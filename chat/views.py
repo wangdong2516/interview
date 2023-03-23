@@ -8,10 +8,8 @@ from rest_framework.views import APIView
 
 class ChatIndexView(APIView):
 
-
     def get(self, request):
         return render(request, "chat/index.html")
-
 
 
 class ChatRoomView(APIView):

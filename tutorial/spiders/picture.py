@@ -50,6 +50,3 @@ class PictureSpider(scrapy.Spider):
 
                 next_page_url = f'{domain}{next_}'
                 yield SeleniumRequest(url=next_page_url, callback=self.parse)
-
-
-

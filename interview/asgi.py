@@ -27,7 +27,7 @@ application = ProtocolTypeRouter(
         'http': get_asgi_application(),
         # websocket协议调用的asgi方法
         "websocket": AllowedHostsOriginValidator(
-                AuthMiddlewareStack(URLRouter(chat.routing.websocket_urlpatterns))
-            ),
+            AuthMiddlewareStack(URLRouter(chat.routing.websocket_urlpatterns))
+        ),
     }
 )

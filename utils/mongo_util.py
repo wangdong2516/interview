@@ -98,4 +98,3 @@ class MongoUtil(object):
 
 mongo_util = MongoUtil(db_name='article', collection_name='pymongo')
 print(mongo_util.query(skip=1))
-
