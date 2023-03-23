@@ -14,3 +14,16 @@ repos:
     rev: 22.10.0
     hooks:
       - id: black
+  # 静态代码监测
+  - repo: local
+    hooks:
+      - id: pylint
+        name: pylint
+        entry: pylint
+        language: system
+        types: [python]
+        args:
+          [
+            "-rn", # Only display messages
+            "-sn", # Don't display the score
+          ]
