@@ -22,7 +22,7 @@ repos:
         entry: pylint
         language: system
         types: [python]
-        exclude: 'utils/logfile_handler\.py$'
+        files: '^utils/logfile_handler\.py$'
         args:
           [
             "-rn", # Only display messages
