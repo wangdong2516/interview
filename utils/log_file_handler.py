@@ -7,6 +7,7 @@ import os
 import time
 from logging.handlers import TimedRotatingFileHandler
 from kafka import KafkaProducer
+from kafka.errors import KafkaError
 
 
 class CommonTimedRotatingFileHandler(TimedRotatingFileHandler):
@@ -131,10 +132,21 @@ class KafkaLoggingHandler(logging.Handler):
             return
         try:
             msg = self.format(record)
-            self.kafka_producer.send(self.topic, {"message": msg})
+            # 生产者producer发送消息，默认是异步形式,同时添加发送成功和发送失败的回调
+            self.kafka_producer.send(self.topic, {"message": msg}).add_callback(
+                self.on_send_success
+            ).add_errback(self.on_send_error)
             self.flush(timeout=1.0)
-        except Exception:
+        except KafkaError:
             logging.Handler.handleError(self, record)
+
+    def on_send_success(self, record_metadata):
+        print(record_metadata.topic)
+        print("发送消息到kafka成功")
+
+    def on_send_error(self, record_metadata):
+        print(record_metadata.topic)
+        print("发送消息到kafka失败")
 
     def flush(self, timeout=None) -> None:
         """
