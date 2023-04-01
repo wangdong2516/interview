@@ -112,7 +112,9 @@ class KafkaLoggingHandler(logging.Handler):
     Kafka日志处理器
     """
 
-    def __init__(self, bootstrap_servers=["localhost:9092"], topic="my_topic"):
+    def __init__(
+        self, bootstrap_servers=["localhost:9092"], topic="my_topic", retries=5
+    ):
         super(KafkaLoggingHandler, self).__init__()
         # 创建一个kafka生产者，向指定的主题发送消息
         self.kafka_producer = KafkaProducer(
@@ -122,6 +124,8 @@ class KafkaLoggingHandler(logging.Handler):
             # 指定生产者在发送批次之前等待更多消息加入批次的时间，kafka生产者会在批次填满或者linger.ms达到
             # 上限之后把批次发送出去
             linger_ms=10,
+            # 设置最大重试次数为5次
+            retries=retries,
         )
 
         self.topic = topic
