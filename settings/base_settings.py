@@ -51,14 +51,10 @@ INSTALLED_APPS = [
     "cid.apps.CidAppConfig",
     "area",
     "utils",
-    # 查询过滤
-    # 数据分析模块
-    "analysis",
+    "analysis",  # 数据分析模块
     "django_filters",
-    # django-channels的网络聊天室
-    "chat",
-    # django-elasticsearch-dsl
-    "django_elasticsearch_dsl",
+    "chat",  # django-channels的网络聊天室
+    "django_elasticsearch_dsl",  # django-elasticsearch-dsl
 ]
 
 MIDDLEWARE = [

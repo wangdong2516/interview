@@ -37,7 +37,7 @@ django-elasticsearch-dsl = "^7.3"
 openai = "^0.26.5"
 uwsgi = "^2.0.21"
 gevent = "^22.10.2"
-flower = "^1.2.0"
+flower = "2.0"
 ipython = "^8.11.0"
 pre-commit = "^3.2.0"
 

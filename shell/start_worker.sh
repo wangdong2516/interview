@@ -4,7 +4,7 @@
 
 # 启动Celery worker进程,并且设置为后台运行
 start_celery_worker() {
-  celery -A celery_app worker -l debug -c 10 --max-tasks-per-child=1000 --detach --logfile=logs/celery_worker.log
+  celery -A celery_app worker -l debug -c 10 --max-tasks-per-child=1000 -E --detach --logfile=logs/celery_worker.log
   # 检查进程是否启动成功
   if [ $? -eq 0 ]
   then
