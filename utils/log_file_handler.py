@@ -113,8 +113,14 @@ class KafkaLoggingHandler(logging.Handler):
     """
 
     def __init__(
-        self, bootstrap_servers=["localhost:9092"], topic="my_topic", retries=5
+        self,
+        bootstrap_servers=["localhost:9092"],
+        topic="my_topic",
+        retries=5,
+        *args,
+        **kwargs
     ):
+        self.logger = logging.handlers.TimedRotatingFileHandler(*args, **kwargs)
         super(KafkaLoggingHandler, self).__init__()
         # 创建一个kafka生产者，向指定的主题发送消息
         self.kafka_producer = KafkaProducer(
@@ -136,6 +142,8 @@ class KafkaLoggingHandler(logging.Handler):
             return
         try:
             msg = self.format(record)
+            record.msg = msg
+            self.logger.emit(record)
             # 生产者producer发送消息，默认是异步形式,同时添加发送成功和发送失败的回调
             self.kafka_producer.send(self.topic, {"message": msg}).add_callback(
                 self.on_send_success
@@ -161,10 +169,12 @@ class KafkaLoggingHandler(logging.Handler):
         Returns:
 
         """
+        self.logger.flush()
         self.kafka_producer.flush(timeout)
 
     def close(self) -> None:
         self.acquire()
+        self.logger.close()
         try:
             if self.kafka_producer:
                 self.kafka_producer.close()

@@ -58,8 +58,6 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    # 日志唯一ID生成(django-cid)，中间件负责从 HTTP 请求标头获取相关属性
-    "cid.middleware.CidMiddleware",
     # 日志处理中间件(记录请求日志信息)
     "middleware.log_middleware.LogMiddleware",
     "django.middleware.security.SecurityMiddleware",
@@ -69,6 +67,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    # 日志唯一ID生成(django-cid)，中间件负责从 HTTP 请求标头获取相关属性
+    "cid.middleware.CidMiddleware",
 ]
 
 ROOT_URLCONF = "interview.urls"
@@ -193,6 +193,10 @@ REST_FRAMEWORK = {
     "PAGE_SIZE": 10,
     # 默认的过滤器后端
     "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
+    # 全局错误处理钩子函数
+    "EXCEPTION_HANDLER": "utils.exception.custom_exception_handler",
+    # 自定义响应格式
+    "DEFAULT_RENDERER_CLASSES": ("utils.response.custom_renderer",),
 }
 
 # ---------------Django-Cid配置----------------------------------
@@ -211,31 +215,33 @@ if not LOG_DIR.exists():
 LOGGING = {
     "version": 1,
     "formatters": {
-        "verbose": {"format": "[cid: %(cid)s] %(levelname)s %(asctime)s %(message)s"},
+        "verbose": {
+            "format": "[cid: %(cid)s] %(levelname)s %(asctime)s %(module)s %(message)s"
+        },
         "simple": {"format": "[cid: %(cid)s] %(levelname)s %(message)s"},
     },
     "handlers": {
-        "api_request_handler": {
+        "api_handler": {
             "level": "INFO",
             "class": "utils.log_file_handler.KafkaLoggingHandler",
             "formatter": "verbose",
             "filters": ["correlation"],
-            # 'filename': f'{BASE_DIR}/logs/api_request.log',
+            "filename": f"{BASE_DIR}/logs/api_request.log",
             # 每分钟切割一次日志
-            # 'when': 'midnight',
+            "when": "midnight",
             # 时间间隔
-            # 'interval': 1,
+            "interval": 1,
             # 保留5份日志
-            # 'backupCount': 30,
-            # 'encoding': 'utf-8'
+            "backupCount": 30,
+            "encoding": "utf-8",
         },
     },
     "filters": {
         "correlation": {"()": "cid.log.CidContextFilter"},
     },
     "loggers": {
-        "api_request": {
-            "handlers": ["api_request_handler"],
+        "api": {
+            "handlers": ["api_handler"],
             "filters": ["correlation"],
             "propagate": True,
             "level": "INFO",
